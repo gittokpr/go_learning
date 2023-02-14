@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"e2/handlers"
+	"go_learning/handlers"
 	"log"
 	"net/http"
 	"os"
@@ -13,7 +13,7 @@ import (
 func main() {
 	//creating a new logger
 	log := log.New(os.Stdout, "product-api", log.LstdFlags)
-	hh := handlers.NewHello(log)
+	hh := handlers.NewProduct(log)
 
 	//creating a new servemux for better control
 	sm := http.NewServeMux()
@@ -21,7 +21,7 @@ func main() {
 
 	//creating server for manual control
 	s := &http.Server{
-		Addr:         "9090",
+		Addr:         ":9090",
 		Handler:      sm,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
