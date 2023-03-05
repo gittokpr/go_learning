@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
-	"go_learning/handlers"
+	"e2/handlers"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -16,8 +18,19 @@ func main() {
 	hh := handlers.NewProduct(log)
 
 	//creating a new servemux for better control
-	sm := http.NewServeMux()
-	sm.Handle("/", hh)
+	sm := mux.NewRouter()
+	getRouter := sm.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", hh.GetProducts)
+
+	putRouter := sm.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/{id:[0-9]+}", hh.UpdateProduct)
+	putRouter.Use(hh.MiddlewareProductValidation)
+
+	postRouter := sm.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", hh.AddProduct)
+	postRouter.Use(hh.MiddlewareProductValidation)
+
+	//sm.Handle("/", hh)
 
 	//creating server for manual control
 	s := &http.Server{
